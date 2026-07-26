@@ -22,9 +22,10 @@ Two things are specific to this kit:
   template in your workspace. One API call, no Docker. Run it once before creating agents.
 - **A public URL.** Agents run in Agent37's cloud and call this app for *every* model turn, so
   `NEXT_PUBLIC_SITE_URL` must be reachable from the internet. In production that's your deployment.
-  Locally, run `npm run tunnel` in a second terminal — it opens a Cloudflare quick tunnel (no
-  account, no token) and writes the URL into `.env.local`, which the dev server reloads on its own.
-  Creating an agent without a public URL is refused, rather than making an agent that can't think.
+  Locally, `npm run dev` opens a Cloudflare quick tunnel for you (needs the `cloudflared` binary —
+  `brew install cloudflared` — but no Cloudflare account) and passes its URL to the app in process,
+  so nothing stale is left in `.env.local`. Creating an agent without a public URL is refused,
+  rather than making an agent that can't think.
 
 ## For your coding agent
 
@@ -60,8 +61,8 @@ steps in order; don't skip the checks.
    pinned tag in `scripts/templates.mjs` is gone — pick a newer one from the
    [hermes-base package page](https://github.com/orgs/agent37-platform/packages/container/package/hermes-base).
 7. **Verify.** Run `npm run typecheck` and `npm run build` (no test suite — these two are the gate).
-8. **Start.** Run `npm run dev`, then `npm run tunnel` in a second terminal, then `npm run smoke` to
-   confirm both halves (key live, proxy publicly reachable). Report the local URL
+8. **Start.** Run `npm run dev` — it prints the public tunnel URL it opened. Pass that to
+   `npm run smoke -- <url>` to confirm both halves (key live, proxy publicly reachable). Report the local URL
    (<http://localhost:3000>): I sign up with email + password (open signup, no email verification) →
    land in a fresh workspace → create an agent. Tell me the first turn may take a minute while the
    agent is configured and restarted, and that a `402` at create time is the Agent37 wallet.
@@ -77,8 +78,7 @@ npm run setup              # first run creates .env.local and prints the keys to
 #                          → paste all three into .env.local, then:
 npm run setup              # creates/configures Supabase, runs the migrations, sets up auth
 npm run templates:publish  # register the agent image (once per workspace)
-npm run dev                # http://localhost:3000 → sign up with email + password
-npm run tunnel             # second terminal — leave it running
+npm run dev                # http://localhost:3000 (+ tunnel) → sign up with email + password
 ```
 
 <details>
@@ -116,9 +116,9 @@ can't create your Supabase backend or register your sign-in URLs), then:
 
 | Symptom | What it is |
 |---|---|
-| Create is refused with "needs a public URL" | `NEXT_PUBLIC_SITE_URL` is unset or localhost. Deploy, or run `npm run tunnel`. |
+| Create is refused with "needs a public URL" | No tunnel and no `NEXT_PUBLIC_SITE_URL`. Install `cloudflared` and restart `npm run dev`, or deploy. |
 | Agent stays "starting" for minutes | Bootstrap is retrying. Check the server log for `[bootstrap]`; a dead tunnel is the usual cause. |
-| Chat says the model is unreachable | Run `npm run smoke`. It tells you whether the OpenRouter key or the public URL is the broken half. |
+| Chat says the model is unreachable | Run `npm run smoke -- <public url>`. It tells you whether the OpenRouter key or the public URL is the broken half. |
 | Chat returns a budget message | That agent hit its monthly cap. Raise it in the agent's Settings tab; spend resets on the 1st. |
 | `402` when creating an agent | The Agent37 wallet, not OpenRouter — fund it under Cloud → Billing. |
 | Spend stays at $0 after a reply | Metering runs after the response finishes; give it a few seconds and reload. Persistent zeros mean the `increment_llm_usage` RPC is failing — check the server log. |

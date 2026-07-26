@@ -38,9 +38,12 @@ Or do it yourself:
 npm install
 npm run setup              # keys → Supabase project, schema, auth
 npm run templates:publish  # register the agent image in your Agent37 workspace (once)
-npm run dev                # http://localhost:3000
-npm run tunnel             # second terminal: a public URL, so cloud agents can reach the proxy
+npm run dev                # http://localhost:3000 (+ a public tunnel, see below)
 ```
+
+`npm run dev` also opens a free Cloudflare quick tunnel (`brew install cloudflared`), because agents
+run in Agent37's cloud and call this app for every turn — localhost isn't reachable from there. In
+production it's just your deployed URL in `NEXT_PUBLIC_SITE_URL` and no tunnel is involved.
 
 Sign up in the app, create an agent, and chat. The turn runs on your OpenRouter key, and the
 **Settings** tab shows what it cost within a few seconds of the reply.

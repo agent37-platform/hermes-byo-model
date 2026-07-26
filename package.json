@@ -5,8 +5,8 @@
   "scripts": {
     "setup": "node scripts/setup.mjs",
     "templates:publish": "node scripts/templates.mjs",
-    "tunnel": "node scripts/tunnel.mjs",
-    "dev": "next dev",
+    "dev": "node scripts/dev.mjs",
+    "dev:next": "next dev",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",

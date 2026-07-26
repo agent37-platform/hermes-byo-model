@@ -5,7 +5,8 @@
 //   2. Your proxy is reachable from the internet at NEXT_PUBLIC_SITE_URL, and rejects an unknown
 //      token — which is exactly the path an agent takes for every turn.
 //
-//   npm run smoke
+//   npm run smoke                            # uses NEXT_PUBLIC_SITE_URL
+//   npm run smoke -- https://x.trycloudflare.com   # the URL `npm run dev` printed
 //
 // Run it when an agent answers "I couldn't reach the model": it tells you which half is broken.
 import { readFileSync } from "node:fs";
@@ -23,9 +24,12 @@ function readEnv(name) {
   return undefined;
 }
 
+const args = process.argv.slice(2);
 const key = readEnv("OPENROUTER_API_KEY");
-const site = readEnv("NEXT_PUBLIC_SITE_URL")?.replace(/\/$/, "");
-const model = process.argv[2] || "moonshotai/kimi-k2.7-code";
+// In local dev the public URL lives only in the dev server's process (npm run dev prints it), so
+// take it as an argument too.
+const site = (args.find((a) => a.startsWith("http")) || readEnv("NEXT_PUBLIC_SITE_URL") || "").replace(/\/$/, "");
+const model = args.find((a) => !a.startsWith("http")) || "moonshotai/kimi-k2.7-code";
 let failed = false;
 
 if (!key) {
@@ -55,7 +59,7 @@ if (!key) {
 if (!site || site.includes("localhost") || site.includes("127.0.0.1")) {
   console.error(
     `✗ NEXT_PUBLIC_SITE_URL is ${site ? `local (${site})` : "unset"} — agents run in the cloud and can't reach it.\n` +
-      "  Deploy and set it, or run `npm run tunnel` in another terminal."
+      "  Deploy and set it, or run `npm run dev` and pass the URL it prints: npm run smoke -- <url>"
   );
   failed = true;
 } else {

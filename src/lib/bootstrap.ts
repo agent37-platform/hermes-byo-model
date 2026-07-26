@@ -56,7 +56,7 @@ export function needsBootstrap(row: { bootstrapped_at?: string | null; proxy_url
 
 // The URL the INSTANCE (running in Agent37's cloud) uses to reach this app's proxy. It must be
 // publicly reachable — an agent can't call your laptop, so localhost is treated as "not set".
-// Deploy, or run `npm run tunnel`.
+// Deploy, or run `npm run dev` locally (it opens a quick tunnel and passes the URL in).
 export function llmProxyUrl(): string | null {
   const site = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
   if (!site || !/^https?:\/\//.test(site) || site.includes("localhost") || site.includes("127.0.0.1")) {
@@ -115,7 +115,7 @@ async function bootstrapAgent(agentId: string): Promise<void> {
     const proxyUrl = llmProxyUrl();
     if (!proxyUrl) {
       // Nothing useful to do: an agent wired to a URL it can't reach is worse than one left alone.
-      console.warn(`[bootstrap] ${agentId}: NEXT_PUBLIC_SITE_URL is unset or local — deploy or run \`npm run tunnel\`.`);
+      console.warn(`[bootstrap] ${agentId}: NEXT_PUBLIC_SITE_URL is unset or local — deploy, or run \`npm run dev\` (it opens a tunnel).`);
       await releaseClaim();
       return;
     }

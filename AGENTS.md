@@ -109,7 +109,7 @@ agent instance ─▶ https://your-app/api/llm/v1  ─▶ openrouter.ai   (per-a
 | `src/config/models.ts` | `DEFAULT_MODEL`, `DEFAULT_SPEND_CAP_USD`, `ALLOWED_MODELS` |
 | `src/config/agents.ts` | `TEMPLATE_NAME`, `AGENT_TYPES`, shapes, `SERVICE_PORTS`, `PORT_LABELS` |
 | `scripts/templates.mjs` | Registers the workspace template (`npm run templates:publish`) |
-| `scripts/tunnel.mjs` | Local-only public URL via a Cloudflare quick tunnel (`npm run tunnel`) |
+| `scripts/dev.mjs` | `npm run dev`: Next plus a local-only Cloudflare quick tunnel for the proxy |
 | `scripts/smoke.mjs` | Checks the key works and the proxy is publicly reachable (`npm run smoke`) |
 | `supabase/migrations/` | `0001_init.sql` (schema, dormant RLS, RPCs) + `0002_byo_model.sql` (tokens, metering) |
 
@@ -119,9 +119,9 @@ agent instance ─▶ https://your-app/api/llm/v1  ─▶ openrouter.ai   (per-a
 npm install
 npm run setup               # configure Supabase end-to-end (idempotent)
 npm run templates:publish   # register the agent template (no Docker; one API call)
-npm run dev                 # http://localhost:3000
-npm run tunnel              # local only: public URL for the proxy, written to .env.local
-npm run smoke               # is the OpenRouter key live, and is the proxy reachable?
+npm run dev                 # http://localhost:3000, plus an auto tunnel so agents can reach /api/llm
+npm run dev:next            # plain `next dev`, no tunnel
+npm run smoke -- <url>      # is the OpenRouter key live, and is the proxy reachable?
 npm run build
 npm run typecheck           # tsc --noEmit
 ```
@@ -137,7 +137,8 @@ plus a real chat turn through the proxy.
 - **Don't point agents at the stock system templates** (`agent37-hermes` / `agent37-openclaw`): they
   wire Agent37's managed model at every boot, which defeats the point of this kit.
 - **A public URL is load-bearing.** Agents call this app for every turn, so `NEXT_PUBLIC_SITE_URL`
-  must be internet-reachable. Agent creation is refused when it isn't, rather than producing an agent
+  must be internet-reachable — `npm run dev` supplies it locally via a quick tunnel, production
+  supplies it as an env var. Agent creation is refused when it isn't, rather than producing an agent
   that can't think.
 - **Metering must never break the transport.** Usage recording happens after the response is sent and
   swallows its own errors; a lost row is a logged warning, not a failed turn.

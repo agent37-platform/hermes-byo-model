@@ -126,7 +126,7 @@ export async function POST(request: Request) {
       throw new ApiError(
         400,
         "no_public_url",
-        "Agents call this app for every model turn, so it needs a public URL. Deploy and set NEXT_PUBLIC_SITE_URL, or run `npm run tunnel` locally."
+        "Agents call this app for every model turn, so it needs a public URL. Deploy and set NEXT_PUBLIC_SITE_URL, or run `npm run dev` locally (it opens a tunnel)."
       );
     }
 

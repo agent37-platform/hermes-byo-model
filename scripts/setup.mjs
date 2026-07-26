@@ -454,8 +454,7 @@ async function main() {
   log(`\n${green("✓ Setup complete.")}`);
   log(`\nNext:`);
   log(`  ${bold("npm run templates:publish")}   ${dim("# register the agent image in your Agent37 workspace (once)")}`);
-  log(`  ${bold("npm run dev")}                 ${dim("# then open http://localhost:3000 and sign in")}`);
-  log(`  ${bold("npm run tunnel")}              ${dim("# in a second terminal, so cloud agents can reach this app")}`);
+  log(`  ${bold("npm run dev")}                 ${dim("# opens a tunnel too, so cloud agents can reach this app")}`);
   log(
     `\n${yellow("!")} Creating an agent spends real money — fund your Agent37 wallet first\n` +
       `  ${dim("(dashboard → Cloud → Billing). An empty wallet returns a 402 at create time.")}`
