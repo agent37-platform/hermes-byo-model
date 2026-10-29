@@ -75,7 +75,8 @@ For OpenRouter surfaces (models, chat completions, usage accounting), the author
 ## How this app fits together
 
 ```
-Browser ─▶ Next.js (this app) ─▶ control plane  https://api.agent37.com/v1        (instances, exec)
+Browser ─▶ Next.js (this app) ─▶ control plane  https://api.agent37.com/v1        (instances)
+   │            │              └▶ sandbox        https://sandbox.agent37.app/v1     (exec)
    │            │              └▶ data plane     https://{instance}.agent37.app/v1  (chat, files)
    │            │
    │            └─▶ Supabase: Auth (browser, anon key) + Postgres (server-only, service-role key):
